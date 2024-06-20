@@ -1,0 +1,66 @@
+version: 18
+jobs:
+- name: CI/CD
+  jobExecutor: internal
+  steps:
+  - !CheckoutStep
+    name: checkout
+    cloneCredential: !DefaultCredential {}
+    withLfs: false
+    withSubmodules: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: build
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands:
+      - yarn
+      - yarn build
+      - ''
+      - cd ./dist
+      - tar -zcvf dist.tar.gz *
+      - mv dist.tar.gz /usr/share/nginx/hxkj/dist/demo/echartsMap
+      - cd /usr/share/nginx/hxkj/dist/demo/echartsMap/
+      - tar -zxvf dist.tar.gz
+      - rm -f dist.tar.gz
+    useTTY: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  triggers:
+  - !BranchUpdateTrigger
+    branches: master
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  cpuRequirement: 250
+  memoryRequirement: 256
+  timeout: 3600
+- name: Push to GitHub
+  jobExecutor: internal
+  steps:
+  - !CheckoutStep
+    name: checkout
+    cloneCredential: !DefaultCredential {}
+    withLfs: false
+    withSubmodules: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: push
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands:
+      - git config user.name "TangSY"
+      - git config user.email "337828932@@qq.com"
+      - git remote set-url origin git@@github.com:TangSY/echarts-map-demo.git
+      - git remote -v
+      - git push
+    useTTY: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  triggers:
+  - !BranchUpdateTrigger {}
+  - !TagCreateTrigger {}
+  retryCondition: never
+  maxRetries: 30
+  retryDelay: 30
+  cpuRequirement: 250
+  memoryRequirement: 256
+  timeout: 3600
