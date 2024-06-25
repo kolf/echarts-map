@@ -18,7 +18,3 @@
 页面效果图：
 
 ![map](https://geojson.hxkj.vip/map.png)
-
-### 赞助
-
-[赞助二维码](https://raw.githubusercontent.com/TangSY/echarts-map-demo/master/src/images/pay.jpg)
