@@ -35,7 +35,6 @@ export default {
       loadedNode: {}, // 记录已加载项
       waitToLoadList: [],
       loadingThreads: new Array(8).fill(null), // 8个并发
-      downloadTips: "下载geoJson数据", //下载进度提示
       isShowTips: false, //是否显示下载提示
     };
   },
